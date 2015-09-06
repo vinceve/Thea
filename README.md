@@ -89,4 +89,5 @@ Todo:
 - Custom port option
 - cleanup code
 - Example app
+- add tests
 - generate default site
