@@ -38,7 +38,7 @@ Thea also has a local server. This is used to test out your static website. It w
 $ thea serve
 ```
 
-This will start a server on http://localhost:5000.
+This will start a server on http://localhost:5000. *NOTE:* Currently this will only work in administrator mode. Windows does not allow to listen on a port when you're not an administrator.
 
 ### Annotations
 
