@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using thea.core;
 
 namespace thea.tools.help
 {
     class TheaHelp : IToolExecutor
     {
-        public void execute(IEnumerable<string> options)
+        public void Execute(IEnumerable<string> options)
         {
-            if (options.Count() == 0)
+            if (!options.Any())
             {
                 Console.WriteLine("thea generate new \t # generate a new app structure");
                 Console.WriteLine("thea serve \t\t # Sets up a small webserver that serves your website.");

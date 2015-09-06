@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace thea
+namespace thea.core
 {
     interface IToolExecutor
     {
-        void execute(IEnumerable<string> options);
+        void Execute(IEnumerable<string> options);
     }
 }

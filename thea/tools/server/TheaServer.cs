@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace thea.tools.server
 {
     class TheaServer : IToolExecutor
     {
-        private string currentPath;
+        private readonly string _currentPath;
 
         public TheaServer() {
-            this.currentPath = Directory.GetCurrentDirectory();
+            _currentPath = Directory.GetCurrentDirectory();
         }
 
-        public void execute(IEnumerable<string> options)
+        public void Execute(IEnumerable<string> options)
         {
-            Console.WriteLine("current path: " + this.currentPath);
-            var path = Path.Combine(currentPath, "data");
-            var server = new SimpleHTTPServer(path, 5000);
+            Console.WriteLine("current path: " + _currentPath);
+            var path = Path.Combine(_currentPath, "data");
+            new SimpleHttpServer(path, 5000);
         }
     }
 }

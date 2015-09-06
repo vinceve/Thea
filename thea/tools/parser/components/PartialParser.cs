@@ -1,62 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace thea.tools.parser.components
 {
     class PartialParser : IParser
     {
-        private TheaParser parser;
-        const string PARTIAL_MATCHER = "<!-- partial: (?<path>.*?) -->";
-        const int ENDLESS_LOOP = 100;
-        private int level = 0;
+        private readonly TheaParser _parser;
+        const string PartialMatcher = "<!-- partial: (?<path>.*?) -->";
+        const int EndlessLoop = 100;
+        private int _level;
 
         public PartialParser(TheaParser parser)
         {
-            this.parser = parser;
+            _parser = parser;
         }
 
-        public string parse(string text)
+        public string Parse(string text)
         {
-            countStack();
+            CountStack();
 
             var currentString = text;
 
-            foreach (Match m in Regex.Matches(text, PARTIAL_MATCHER))
+            foreach (Match m in Regex.Matches(text, PartialMatcher))
             {
                 var partial = m.Groups["path"].Value;
                 Console.WriteLine("found partial include: '{0}'", partial);
 
-                var partialPath = Path.Combine(parser.RootPath, "_partials", partial);
+                var partialPath = Path.Combine(_parser.RootPath, "_partials", partial);
 
                 if (!File.Exists(partialPath))
                 {
                     throw new Exception("Path does not exist! " + partialPath);
                 }
-                else
-                {
-                    var partialContent = File.ReadAllText(partialPath);
+                var partialContent = File.ReadAllText(partialPath);
 
-                    // Do some russian doll parsing.
-                    var parsedSubPartials = this.parse(partialContent);
+                // Do some russian doll parsing.
+                var parsedSubPartials = Parse(partialContent);
 
-                    var regex = new Regex(Regex.Escape(m.Value));
-                    currentString = regex.Replace(currentString, parsedSubPartials, 1);
-                }
+                var regex = new Regex(Regex.Escape(m.Value));
+                currentString = regex.Replace(currentString, parsedSubPartials, 1);
             }
             
             return currentString;
         }
 
-        private void countStack()
+        private void CountStack()
         {
-            level++;
+            _level++;
 
-            if (level >= ENDLESS_LOOP)
+            if (_level >= EndlessLoop)
             {
                 throw new Exception("Infinity loop detected.");
             }

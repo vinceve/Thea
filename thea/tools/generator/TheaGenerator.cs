@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using thea.core;
 
 namespace thea.tools.generator
 {
     class TheaGenerator : IToolExecutor
     {
-        public void execute(IEnumerable<string> options)
+        public void Execute(IEnumerable<string> options)
         {
             var args = new Queue<string>(options);
             var action = args.Dequeue();
@@ -16,7 +13,7 @@ namespace thea.tools.generator
             if (action == "new")
             {
                 var newGenerator = new GenerateNew();
-                newGenerator.execute(args);
+                newGenerator.Execute(args);
             }
         }
     }

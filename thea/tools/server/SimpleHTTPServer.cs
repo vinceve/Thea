@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Sockets;
-using System.Net;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading;
-using System.Diagnostics;
 using thea.tools.parser;
 
 namespace thea.tools.server
 {
-    class SimpleHTTPServer
+    class SimpleHttpServer
     {
         private readonly string[] _indexFiles = { 
         "index.html", 
@@ -20,7 +18,7 @@ namespace thea.tools.server
         "default.htm" 
     };
 
-        private static IDictionary<string, string> _mimeTypeMappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
+        private static readonly IDictionary<string, string> MimeTypeMappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
         #region extension to MIME type list
         {".asf", "video/x-ms-asf"},
         {".asx", "video/x-ms-asf"},
@@ -85,43 +83,38 @@ namespace thea.tools.server
         {".wmv", "video/x-ms-wmv"},
         {".xml", "text/xml"},
         {".xpi", "application/x-xpinstall"},
-        {".zip", "application/zip"},
+        {".zip", "application/zip"}
         #endregion
     };
         private Thread _serverThread;
         private string _rootDirectory;
         private HttpListener _listener;
-        private int _port;
-        private TheaParser parser;
+        private TheaParser _parser;
 
-        public int Port
-        {
-            get { return _port; }
-            private set { }
-        }
+        public int Port { get; private set; }
 
         /// <summary>
         /// Construct server with given port.
         /// </summary>
         /// <param name="path">Directory path to serve.</param>
         /// <param name="port">Port of the server.</param>
-        public SimpleHTTPServer(string path, int port)
+        public SimpleHttpServer(string path, int port)
         {
-            this.Initialize(path, port);
+            Initialize(path, port);
         }
 
         /// <summary>
         /// Construct server with suitable port.
         /// </summary>
         /// <param name="path">Directory path to serve.</param>
-        public SimpleHTTPServer(string path)
+        public SimpleHttpServer(string path)
         {
             //get an empty port
-            TcpListener l = new TcpListener(IPAddress.Loopback, 0);
+            var l = new TcpListener(IPAddress.Loopback, 0);
             l.Start();
             int port = ((IPEndPoint)l.LocalEndpoint).Port;
             l.Stop();
-            this.Initialize(path, port);
+            Initialize(path, port);
         }
 
         /// <summary>
@@ -135,11 +128,10 @@ namespace thea.tools.server
 
         private void Listen()
         {
-            this.parser = new TheaParser();
-            this.parser.RootPath = _rootDirectory;
+            _parser = new TheaParser {RootPath = _rootDirectory};
 
             _listener = new HttpListener();
-            _listener.Prefixes.Add("http://*:" + _port.ToString() + "/");
+            _listener.Prefixes.Add("http://*:" + Port + "/");
             _listener.Start();
             while (true)
             {
@@ -192,26 +184,24 @@ namespace thea.tools.server
                     }
                     else
                     {
-                        var fileContents = System.IO.File.ReadAllText(filename);
-                        var parsedContents = "";
+                        var fileContents = File.ReadAllText(filename);
 
                         try
                         {
-                            parsedContents = this.parser.execute(fileContents);
-                            input = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(parsedContents));
+                            var parsedContents = _parser.Execute(fileContents);
+                            input = new MemoryStream(Encoding.ASCII.GetBytes(parsedContents));
                         }
                         catch (Exception ex)
                         {
-                            parsedContents = ex.Message;
                         }
                     }
 
                     //Adding permanent http response headers
                     string mime;
-                    context.Response.ContentType = _mimeTypeMappings.TryGetValue(Path.GetExtension(filename), out mime) ? mime : "application/octet-stream";
+                    context.Response.ContentType = MimeTypeMappings.TryGetValue(Path.GetExtension(filename), out mime) ? mime : "application/octet-stream";
                     context.Response.ContentLength64 = input.Length;
                     context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
-                    context.Response.AddHeader("Last-Modified", System.IO.File.GetLastWriteTime(filename).ToString("r"));
+                    context.Response.AddHeader("Last-Modified", File.GetLastWriteTime(filename).ToString("r"));
 
                     byte[] buffer = new byte[1024 * 16];
                     int nbytes;
@@ -242,9 +232,9 @@ namespace thea.tools.server
 
         private void Initialize(string path, int port)
         {
-            this._rootDirectory = path;
-            this._port = port;
-            _serverThread = new Thread(this.Listen);
+            _rootDirectory = path;
+            Port = port;
+            _serverThread = new Thread(Listen);
             _serverThread.Start();
         }
 

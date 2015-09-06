@@ -1,49 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+using System.Threading;
+using thea.core;
 using thea.tools.parser;
 
 namespace thea.tools.compiler
 {
     class TheaCompiler : IToolExecutor
     {
-        private string outputPath;
-        private string inputPath;
-        private TheaParser parser;
-        private string relativePath;
+        private readonly string _outputPath;
+        private readonly string _inputPath;
+        private readonly TheaParser _parser;
+        private string _relativePath;
 
         public TheaCompiler()
         {
             var currentPath = Directory.GetCurrentDirectory();
 
-            this.outputPath = Path.Combine(currentPath, "output");
-            this.inputPath = Path.Combine(currentPath, "data");
-            this.parser = new TheaParser();
-            this.parser.RootPath = this.inputPath;
+            _outputPath = Path.Combine(currentPath, "output");
+            _inputPath = Path.Combine(currentPath, "data");
+            _parser = new TheaParser {RootPath = _inputPath};
         }
 
-        public void execute(IEnumerable<string> options)
+        public void Execute(IEnumerable<string> options)
         {
             try
             {
-                compileDirectory("");
+                CompileDirectory("");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("ERROR: " + ex.Message);
-                System.Threading.Thread.Sleep(20000);
+                Thread.Sleep(20000);
             }
         }
 
-        public void compileDirectory(string readingDirectory, bool hasSystemDirectories=true)
+        public void CompileDirectory(string readingDirectory, bool hasSystemDirectories=true)
         {
-            this.relativePath = readingDirectory;
+            _relativePath = readingDirectory;
 
-            var currentInputDirectory = Path.Combine(this.inputPath, readingDirectory);
-            var currentOutputDirectory = Path.Combine(this.outputPath, readingDirectory);
+            var currentInputDirectory = Path.Combine(_inputPath, readingDirectory);
+            var currentOutputDirectory = Path.Combine(_outputPath, readingDirectory);
 
             IEnumerable<string> directories = Directory.GetDirectories(currentInputDirectory);
             Console.WriteLine("GET DIRECTORIES");
@@ -67,12 +67,12 @@ namespace thea.tools.compiler
                 Console.WriteLine("Creating directory: " + newDirectory);
                 Directory.CreateDirectory(newDirectory);
 
-                var oldRelativePath = this.relativePath;
+                var oldRelativePath = _relativePath;
                 var newRelativePath = Path.Combine(oldRelativePath, directoryName);
                 
-                compileDirectory(newRelativePath, false);
+                CompileDirectory(newRelativePath, false);
                 
-                this.relativePath = oldRelativePath;
+                _relativePath = oldRelativePath;
             }
 
             var files = Directory.GetFiles(currentInputDirectory);
@@ -88,7 +88,7 @@ namespace thea.tools.compiler
                     var fileContent = File.ReadAllText(file);
 
                     Console.WriteLine("test: " + fileContent);
-                    var parsedFile = this.parser.execute(fileContent);
+                    var parsedFile = _parser.Execute(fileContent);
 
                     
                     Console.WriteLine("writing file: " + compiledFilePath);

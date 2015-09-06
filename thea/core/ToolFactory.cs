@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using thea.tools.compiler;
+﻿using thea.tools.compiler;
 using thea.tools.generator;
 using thea.tools.help;
 using thea.tools.server;
 
-namespace thea
+namespace thea.core
 {
     class ToolFactory
     {
-        private Arguments arguments;
+        private readonly Arguments _arguments;
 
         public ToolFactory(Arguments parser)
         {
-            this.arguments = parser;
+            _arguments = parser;
         }
 
-        public void launch()
+        public void Launch()
         {
-            IToolExecutor tool = null;
+            IToolExecutor tool;
 
-            switch (this.arguments.Keyword.ToLower())
+            switch (_arguments.Keyword.ToLower())
             {
                 case "serve":
                     tool = new TheaServer();
@@ -39,7 +34,7 @@ namespace thea
                     break;
             }
 
-            tool.execute(arguments.getOptions());
+            tool.Execute(_arguments.GetOptions());
         }
     }
 }

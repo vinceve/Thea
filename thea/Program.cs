@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using thea.core;
 
 namespace thea
 {
@@ -14,7 +11,7 @@ namespace thea
             {
                 var arguments = new Arguments(args);
                 ToolFactory factory = new ToolFactory(arguments);
-                factory.launch();
+                factory.Launch();
             }
             catch (Exception ex)
             {

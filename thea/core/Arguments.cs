@@ -1,30 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace thea
+namespace thea.core
 {
     class Arguments
     {
         public string Keyword { get; set; }
-        private Queue<string> options;
+        private readonly Queue<string> _options;
 
         public Arguments(string[] args)
         {
-            if (args.Count() == 0)
+            if (!args.Any())
             {
                 throw new Exception("No command has been given.");
             }
 
-            this.options = new Queue<string>(args);
-            this.Keyword = this.options.Dequeue();
+            _options = new Queue<string>(args);
+            Keyword = _options.Dequeue();
         }
 
-        public IEnumerable<string> getOptions()
+        public IEnumerable<string> GetOptions()
         {
-            return this.options;
+            return _options;
         }
     }
 }

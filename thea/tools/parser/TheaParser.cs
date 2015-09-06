@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using thea.tools.parser.components;
+﻿using thea.tools.parser.components;
 
 namespace thea.tools.parser
 {
@@ -11,12 +6,12 @@ namespace thea.tools.parser
     {
         public string RootPath { get; set; }
 
-        public string execute(string text)
+        public string Execute(string text)
         {
             var layout = new LayoutParser(this);
             var partials = new PartialParser(this);
 
-            return partials.parse(layout.parse(text));
+            return partials.Parse(layout.Parse(text));
         }
     }
 }
