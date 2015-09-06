@@ -79,21 +79,30 @@ namespace thea.tools.compiler
 
             foreach (var file in files)
             {
-                Console.WriteLine("Reading file: " + file);
-                
-                var fileContent = File.ReadAllText(file);
-
-                Console.WriteLine("test: " + fileContent);
-                var parsedFile = this.parser.execute(fileContent);
-                
                 var compiledFilePath = Path.Combine(currentOutputDirectory, Path.GetFileName(file));
-                Console.WriteLine("writing file: " + compiledFilePath);
 
-                using (FileStream fs = File.Create(compiledFilePath))
+                if (Path.GetExtension(file) == "html")
                 {
-                    Byte[] newFileContent = new UTF8Encoding(true).GetBytes(parsedFile);
-                    // Add some information to the file.
-                    fs.Write(newFileContent, 0, newFileContent.Length);
+                    Console.WriteLine("Reading file: " + file);
+
+                    var fileContent = File.ReadAllText(file);
+
+                    Console.WriteLine("test: " + fileContent);
+                    var parsedFile = this.parser.execute(fileContent);
+
+                    
+                    Console.WriteLine("writing file: " + compiledFilePath);
+
+                    using (FileStream fs = File.Create(compiledFilePath))
+                    {
+                        Byte[] newFileContent = new UTF8Encoding(true).GetBytes(parsedFile);
+                        // Add some information to the file.
+                        fs.Write(newFileContent, 0, newFileContent.Length);
+                    }
+                }
+                else
+                {
+                    File.Copy(file, compiledFilePath, true);
                 }
             }
         }

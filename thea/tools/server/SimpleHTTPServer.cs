@@ -184,19 +184,27 @@ namespace thea.tools.server
                         throw new Exception("The paths cannot be used.");
                     }
 
-                    var fileContents = System.IO.File.ReadAllText(@filename);
-                    var parsedContents = "";
+                    Stream input = null;
 
-                    try
+                    if (Path.GetExtension(filename) != "html")
                     {
-                        parsedContents = this.parser.execute(fileContents);
+                        input = new FileStream(filename, FileMode.Open);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        parsedContents = ex.Message;
-                    }
+                        var fileContents = System.IO.File.ReadAllText(filename);
+                        var parsedContents = "";
 
-                    var input = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(parsedContents));
+                        try
+                        {
+                            parsedContents = this.parser.execute(fileContents);
+                            input = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(parsedContents));
+                        }
+                        catch (Exception ex)
+                        {
+                            parsedContents = ex.Message;
+                        }
+                    }
 
                     //Adding permanent http response headers
                     string mime;
