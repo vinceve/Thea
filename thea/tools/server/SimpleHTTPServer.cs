@@ -178,7 +178,7 @@ namespace thea.tools.server
 
                     Stream input = null;
 
-                    if (Path.GetExtension(filename) != "html")
+                    if (Path.GetExtension(filename) != ".html" && Path.GetExtension(filename) != ".htm")
                     {
                         input = new FileStream(filename, FileMode.Open);
                     }
@@ -193,6 +193,7 @@ namespace thea.tools.server
                         }
                         catch (Exception ex)
                         {
+                            Console.WriteLine("ERROR: " + ex.Message);
                         }
                     }
 

@@ -1,4 +1,5 @@
-﻿using thea.tools.parser.components;
+﻿using System;
+using thea.tools.parser.components;
 
 namespace thea.tools.parser
 {

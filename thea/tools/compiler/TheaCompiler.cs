@@ -81,7 +81,7 @@ namespace thea.tools.compiler
             {
                 var compiledFilePath = Path.Combine(currentOutputDirectory, Path.GetFileName(file));
 
-                if (Path.GetExtension(file) == "html")
+                if (Path.GetExtension(file) == ".html" || Path.GetExtension(file) == ".htm")
                 {
                     Console.WriteLine("Reading file: " + file);
 
